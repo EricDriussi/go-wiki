@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 
@@ -22,7 +21,9 @@ var (
 func ViewHandler(res http.ResponseWriter, req *http.Request) {
 	title := req.URL.Path[len(ViewPath):]
 	page := tryLoadPage(title)
-	fmt.Fprintf(res, "<h1>%s</h1><div>%s</div>", page.Title, page.Body)
+	editTemplate, _ := template.ParseFiles("src/server/html_templates/view.html")
+	dto := templateDTO{Page: page, Path: EditPath}
+	editTemplate.Execute(res, dto)
 }
 
 func EditHandler(res http.ResponseWriter, req *http.Request) {
@@ -38,7 +39,7 @@ func SaveHandler(res http.ResponseWriter, req *http.Request) {
 	body := req.FormValue("body")
 	pageToWrite := p.Page{Title: pageRouteWithTitle, Body: body}
 	pageToWrite.Save()
-	http.Redirect(res, req, "/wiki/view/"+pageRouteWithTitle, http.StatusFound)
+	http.Redirect(res, req, ViewPath+pageRouteWithTitle, http.StatusFound)
 }
 
 func tryLoadPage(title string) p.Page {
