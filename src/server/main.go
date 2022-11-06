@@ -8,6 +8,11 @@ import (
 	p "wiki/src/page"
 )
 
+type templateDTO struct {
+	Page p.Page
+	Path string
+}
+
 var (
 	ViewPath = "/wiki/view/"
 	EditPath = "/wiki/edit/"
@@ -24,7 +29,8 @@ func EditHandler(res http.ResponseWriter, req *http.Request) {
 	title := req.URL.Path[len(EditPath):]
 	page := tryLoadPage(title)
 	editTemplate, _ := template.ParseFiles("src/server/html_templates/edit_form.html")
-	editTemplate.Execute(res, page)
+	dto := templateDTO{Page: page, Path: SavePath}
+	editTemplate.Execute(res, dto)
 }
 
 func SaveHandler(res http.ResponseWriter, req *http.Request) {
