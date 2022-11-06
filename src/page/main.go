@@ -27,7 +27,7 @@ func Load(title string) (*Page, error) {
 	fullPath := buildPathToPage(title)
 	body, err := os.ReadFile(fullPath)
 	if err != nil {
-		return &Page{}, err
+		return &Page{Title: title}, err
 	}
 	return &Page{Title: title, Body: string(body)}, nil
 }

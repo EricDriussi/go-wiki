@@ -8,7 +8,7 @@ import (
 )
 
 type templateDTO struct {
-	Page p.Page
+	Page *p.Page
 	Path string
 }
 
@@ -20,14 +20,18 @@ var (
 
 func ViewHandler(res http.ResponseWriter, req *http.Request) {
 	title := req.URL.Path[len(ViewPath):]
-	page := tryLoadPage(title)
+	page, err := p.Load(title)
+	if err != nil {
+		http.Redirect(res, req, EditPath+title, http.StatusFound)
+		return
+	}
 	dto := templateDTO{Page: page, Path: EditPath}
 	renderTemplate(res, "view", dto)
 }
 
 func EditHandler(res http.ResponseWriter, req *http.Request) {
 	title := req.URL.Path[len(EditPath):]
-	page := tryLoadPage(title)
+	page, _ := p.Load(title)
 	dto := templateDTO{Page: page, Path: SavePath}
 	renderTemplate(res, "edit_form", dto)
 }
@@ -43,12 +47,4 @@ func SaveHandler(res http.ResponseWriter, req *http.Request) {
 func renderTemplate(res http.ResponseWriter, templateName string, dto templateDTO) {
 	editTemplate, _ := template.ParseFiles("src/server/html_templates/" + templateName + ".html")
 	editTemplate.Execute(res, dto)
-}
-
-func tryLoadPage(title string) p.Page {
-	page, err := p.Load(title)
-	if err != nil {
-		page.Title = "Nothing much to load..."
-	}
-	return *page
 }
