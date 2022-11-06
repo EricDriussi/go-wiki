@@ -1,34 +1,15 @@
 package server
 
 import (
-	"fmt"
+	"log"
 	"net/http"
-	"regexp"
 	config "wiki/src"
-	h "wiki/src/server/handlers"
+	factory "wiki/src/server/factory"
 )
 
-func GetViewHandler() http.HandlerFunc {
-	return HandlerMaker(h.ViewHandler)
-}
-
-func GetEditHandler() http.HandlerFunc {
-	return HandlerMaker(h.EditHandler)
-}
-
-func GetSaveHandler() http.HandlerFunc {
-	return HandlerMaker(h.SaveHandler)
-}
-
-var validPath = regexp.MustCompile(fmt.Sprintf("^(%s|%s|%s)([a-zA-Z0-9_-]+)$", config.ViewRoute, config.EditRoute, config.SaveRoute))
-
-func HandlerMaker(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
-	return func(res http.ResponseWriter, req *http.Request) {
-		match := validPath.FindStringSubmatch(req.URL.Path)
-		if match == nil {
-			http.NotFound(res, req)
-			return
-		}
-		fn(res, req, match[2])
-	}
+func Run() {
+	http.HandleFunc(config.ViewRoute, factory.GetViewHandler())
+	http.HandleFunc(config.EditRoute, factory.GetEditHandler())
+	http.HandleFunc(config.SaveRoute, factory.GetSaveHandler())
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

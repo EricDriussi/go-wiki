@@ -4,19 +4,17 @@ import (
 	"bufio"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"strings"
-	config "wiki/src"
 	"wiki/src/page"
-	factory "wiki/src/server"
+	"wiki/src/server"
 )
 
 func main() {
 	if len(os.Args[1:]) == 0 {
 		fmt.Println("Launching server on port 8080")
 		fmt.Println("Go to http://localhost:8080/wiki/view/[WIKI_PAGE_TITLE] to check it out")
-		runServer()
+		server.Run()
 	}
 	for _, a := range os.Args[1:] {
 		if a == "-r" {
@@ -68,11 +66,4 @@ func basicReader() string {
 		return ""
 	}
 	return strings.TrimSuffix(body, "\n")
-}
-
-func runServer() {
-	http.HandleFunc(config.ViewRoute, factory.GetViewHandler())
-	http.HandleFunc(config.EditRoute, factory.GetEditHandler())
-	http.HandleFunc(config.SaveRoute, factory.GetSaveHandler())
-	log.Fatal(http.ListenAndServe(":8080", nil))
 }
