@@ -7,7 +7,7 @@ import (
 )
 
 func ViewHandler(res http.ResponseWriter, req *http.Request) {
-	title := req.URL.Path[len("/wiki_pages/"):]
-	page, _ := p.Load(title, "wiki_pages")
+	pageRouteWithTitle := req.URL.Path[len("/wiki/"):]
+	page, _ := p.Load(pageRouteWithTitle)
 	fmt.Fprintf(res, "<h1>%s</h1><div>%s</div>", page.Title, page.Body)
 }

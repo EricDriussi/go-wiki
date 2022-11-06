@@ -3,6 +3,7 @@ package page
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 type Page struct {
@@ -11,10 +12,11 @@ type Page struct {
 	Route string
 }
 
+var defaultWikiRoute = "wiki_pages/"
+
 func (page *Page) Save() error {
-	filename := page.Title + ".txt"
-	path := buildPath(page.Route)
-	fullPath := path + filename
+	path := buildPathToRoute(page.Route)
+	fullPath := path + page.Title + ".txt"
 	err := createDirs(path)
 	if err != nil {
 		return err
@@ -23,22 +25,26 @@ func (page *Page) Save() error {
 	return os.WriteFile(fullPath, fileContent, 0600)
 }
 
-func Load(title string, route string) (*Page, error) {
-	filename := title + ".txt"
-	path := buildPath(route)
-	fullPath := path + filename
+func Load(pageRouteWithTitle string) (*Page, error) {
+	base := filepath.Base(pageRouteWithTitle)
+	fullPath := buildPathToPage(pageRouteWithTitle)
 	body, err := os.ReadFile(fullPath)
 	if err != nil {
 		return nil, err
 	}
-	return &Page{Title: title, Body: string(body)}, nil
+	return &Page{Title: base, Body: string(body)}, nil
 }
 
 func createDirs(path string) error {
 	return os.MkdirAll(path, os.ModePerm)
 }
 
-func buildPath(route string) string {
+func buildPathToRoute(route string) string {
 	cwd, _ := os.Getwd()
-	return fmt.Sprintf("%v/%v/", cwd, route)
+	return fmt.Sprintf("%s/%s/%s/", cwd, defaultWikiRoute, route)
+}
+
+func buildPathToPage(route string) string {
+	cwd, _ := os.Getwd()
+	return fmt.Sprintf("%s/%s/%s.txt", cwd, defaultWikiRoute, route)
 }
