@@ -37,8 +37,8 @@ func readWrite() {
 }
 
 func serve() {
-	http.HandleFunc(server.ViewPath, server.ViewHandler)
-	http.HandleFunc(server.EditPath, server.EditHandler)
-	http.HandleFunc(server.SavePath, server.SaveHandler)
+	http.HandleFunc(server.ViewRoute, server.ViewHandler)
+	http.HandleFunc(server.EditRoute, server.EditHandler)
+	http.HandleFunc(server.SaveRoute, server.SaveHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -13,31 +13,39 @@ type templateDTO struct {
 }
 
 var (
-	ViewPath = "/wiki/view/"
-	EditPath = "/wiki/edit/"
-	SavePath = "/wiki/save/"
+	ViewRoute     = "/wiki/view/"
+	EditRoute     = "/wiki/edit/"
+	SaveRoute     = "/wiki/save/"
+	templatesPath = "src/server/html_templates/"
+)
+
+var templates = template.Must(
+	template.ParseFiles(
+		templatesPath+"edit_form.html",
+		templatesPath+"view.html",
+	),
 )
 
 func ViewHandler(res http.ResponseWriter, req *http.Request) {
-	title := req.URL.Path[len(ViewPath):]
+	title := req.URL.Path[len(ViewRoute):]
 	page, err := p.Load(title)
 	if err != nil {
-		http.Redirect(res, req, EditPath+title, http.StatusFound)
+		http.Redirect(res, req, EditRoute+title, http.StatusFound)
 		return
 	}
-	dto := templateDTO{Page: page, Path: EditPath}
+	dto := templateDTO{Page: page, Path: EditRoute}
 	renderTemplate(res, "view", dto)
 }
 
 func EditHandler(res http.ResponseWriter, req *http.Request) {
-	title := req.URL.Path[len(EditPath):]
+	title := req.URL.Path[len(EditRoute):]
 	page, _ := p.Load(title)
-	dto := templateDTO{Page: page, Path: SavePath}
+	dto := templateDTO{Page: page, Path: SaveRoute}
 	renderTemplate(res, "edit_form", dto)
 }
 
 func SaveHandler(res http.ResponseWriter, req *http.Request) {
-	title := req.URL.Path[len(SavePath):]
+	title := req.URL.Path[len(SaveRoute):]
 	body := req.FormValue("body")
 	pageToWrite := p.Page{Title: title, Body: body}
 	err := pageToWrite.Save()
@@ -45,16 +53,12 @@ func SaveHandler(res http.ResponseWriter, req *http.Request) {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(res, req, ViewPath+title, http.StatusFound)
+	http.Redirect(res, req, ViewRoute+title, http.StatusFound)
 }
 
 func renderTemplate(res http.ResponseWriter, templateName string, dto templateDTO) {
-	editTemplate, parseError := template.ParseFiles("src/server/html_templates/" + templateName + ".html")
-	if parseError != nil {
-		http.Error(res, parseError.Error(), http.StatusInternalServerError)
-	}
-	execError := editTemplate.Execute(res, dto)
-	if execError != nil {
-		http.Error(res, execError.Error(), http.StatusInternalServerError)
+	err := templates.ExecuteTemplate(res, templateName+".html", dto)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
 	}
 }
