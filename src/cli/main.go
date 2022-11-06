@@ -9,6 +9,8 @@ import (
 	"wiki/src/page"
 )
 
+var articlesToDownload = []string{"Wombat", "Platypus", "TempleOS"}
+
 func PrintWikiPage() {
 	fmt.Println("Write the title of the desired wiki page (no spaces allowed):")
 	var title string
@@ -35,6 +37,12 @@ func CreateWikiPage() {
 	if saveErr != nil {
 		log.Fatal("[ERROR]: Couldn't save requested page")
 	}
+}
+
+func SetupWikiPages() {
+	fmt.Println("Downloading a bunch of pages from wikipedia...")
+	downloadArticles(articlesToDownload)
+	fmt.Println("All done!")
 }
 
 func basicReader() string {

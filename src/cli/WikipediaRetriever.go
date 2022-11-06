@@ -22,15 +22,7 @@ type wikipediaArticle struct {
 	} `json:"query"`
 }
 
-var (
-	wombatArticle   = "Wombat"
-	platypusArticle = "Platypus"
-	templeOSArticle = "TempleOS"
-	articles        = []string{"Wombat", "Platypus", "TempleOS"}
-)
-
-func DownloadArticlesInParallel() {
-	fmt.Println("Setting up a bunch of pages from wikipedia...")
+func downloadArticles(articles []string) {
 	var wg sync.WaitGroup
 
 	for _, article := range articles {
@@ -38,7 +30,7 @@ func DownloadArticlesInParallel() {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			rawResponse := downloadArticle(artCopy)
+			rawResponse := downloadSingleArticle(artCopy)
 			articleTitle, articleExtract := parseWikipediaResponse(rawResponse)
 
 			pageToWrite := page.Page{Title: articleTitle, Body: articleExtract}
@@ -51,7 +43,7 @@ func DownloadArticlesInParallel() {
 	wg.Wait()
 }
 
-func downloadArticle(article string) string {
+func downloadSingleArticle(article string) string {
 	url := fmt.Sprintf("https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=%s&formatversion=2&exintro=1&explaintext=1", article)
 	resp, wikipediaError := http.Get(url)
 	if wikipediaError != nil {
@@ -74,19 +66,4 @@ func parseWikipediaResponse(res string) (string, string) {
 		return "", ""
 	}
 	return article.Query.Pages[0].Title, article.Query.Pages[0].Extract
-}
-
-func DownloadArticles() {
-	fmt.Println("Setting up a bunch of pages from wikipedia...")
-
-	for _, article := range articles {
-		rawResponse := downloadArticle(article)
-		articleTitle, articleExtract := parseWikipediaResponse(rawResponse)
-
-		pageToWrite := page.Page{Title: articleTitle, Body: articleExtract}
-		saveErr := pageToWrite.Save()
-		if saveErr != nil {
-			log.Fatal("[ERROR]: Couldn't save requested page")
-		}
-	}
 }
