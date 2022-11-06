@@ -1,8 +1,11 @@
 package server
 
 import (
+	"errors"
+	"fmt"
 	"html/template"
 	"net/http"
+	"regexp"
 
 	p "wiki/src/page"
 )
@@ -26,10 +29,15 @@ var templates = template.Must(
 	),
 )
 
+var validPath = regexp.MustCompile(fmt.Sprintf("^(%s|%s|%s)([a-zA-Z0-9_-]+)$", ViewRoute, EditRoute, SaveRoute))
+
 func ViewHandler(res http.ResponseWriter, req *http.Request) {
-	title := req.URL.Path[len(ViewRoute):]
-	page, err := p.Load(title)
-	if err != nil {
+	title, invalidTitleErr := getTitle(res, req)
+	if invalidTitleErr != nil {
+		return
+	}
+	page, noPageErr := p.Load(title)
+	if noPageErr != nil {
 		http.Redirect(res, req, EditRoute+title, http.StatusFound)
 		return
 	}
@@ -38,14 +46,20 @@ func ViewHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 func EditHandler(res http.ResponseWriter, req *http.Request) {
-	title := req.URL.Path[len(EditRoute):]
+	title, invalidTitleErr := getTitle(res, req)
+	if invalidTitleErr != nil {
+		return
+	}
 	page, _ := p.Load(title)
 	dto := templateDTO{Page: page, Path: SaveRoute}
 	renderTemplate(res, "edit_form", dto)
 }
 
 func SaveHandler(res http.ResponseWriter, req *http.Request) {
-	title := req.URL.Path[len(SaveRoute):]
+	title, invalidTitleErr := getTitle(res, req)
+	if invalidTitleErr != nil {
+		return
+	}
 	body := req.FormValue("body")
 	pageToWrite := p.Page{Title: title, Body: body}
 	err := pageToWrite.Save()
@@ -61,4 +75,13 @@ func renderTemplate(res http.ResponseWriter, templateName string, dto templateDT
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func getTitle(res http.ResponseWriter, req *http.Request) (string, error) {
+	match := validPath.FindStringSubmatch(req.URL.Path)
+	if match == nil {
+		http.NotFound(res, req)
+		return "", errors.New("Invalid page title")
+	}
+	return match[2], nil
 }
