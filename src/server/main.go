@@ -13,14 +13,17 @@ var (
 )
 
 func ViewHandler(res http.ResponseWriter, req *http.Request) {
-	pageRouteWithTitle := req.URL.Path[len(ViewPath):]
-	page, _ := p.Load(pageRouteWithTitle)
+	title := req.URL.Path[len(ViewPath):]
+	page, err := p.Load(title)
+	if err != nil {
+		page.Title = "Nothing much really..."
+	}
 	fmt.Fprintf(res, "<h1>%s</h1><div>%s</div>", page.Title, page.Body)
 }
 
 func EditHandler(res http.ResponseWriter, req *http.Request) {
-	pageRouteWithTitle := req.URL.Path[len(EditPath):]
-	page, err := p.Load(pageRouteWithTitle)
+	title := req.URL.Path[len(EditPath):]
+	page, err := p.Load(title)
 	if err != nil {
 		page.Title = "Nothing much really..."
 	}
