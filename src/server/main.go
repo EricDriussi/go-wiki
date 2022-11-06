@@ -14,19 +14,13 @@ var (
 
 func ViewHandler(res http.ResponseWriter, req *http.Request) {
 	title := req.URL.Path[len(ViewPath):]
-	page, err := p.Load(title)
-	if err != nil {
-		page.Title = "Nothing much really..."
-	}
+	page := tryLoadPage(title)
 	fmt.Fprintf(res, "<h1>%s</h1><div>%s</div>", page.Title, page.Body)
 }
 
 func EditHandler(res http.ResponseWriter, req *http.Request) {
 	title := req.URL.Path[len(EditPath):]
-	page, err := p.Load(title)
-	if err != nil {
-		page.Title = "Nothing much really..."
-	}
+	page := tryLoadPage(title)
 	fmt.Fprintf(res, "<h1>Editing %s</h1>"+
 		"<form action=\"/wiki/save/%s\" method=\"POST\">"+
 		"<textarea name=\"body\">%s</textarea><br>"+
@@ -40,4 +34,12 @@ func SaveHandler(res http.ResponseWriter, req *http.Request) {
 	pageToWrite := p.Page{Title: pageRouteWithTitle, Body: body}
 	pageToWrite.Save()
 	http.Redirect(res, req, "/wiki/view/"+pageRouteWithTitle, http.StatusFound)
+}
+
+func tryLoadPage(title string) p.Page {
+	page, err := p.Load(title)
+	if err != nil {
+		page.Title = "Nothing much to load..."
+	}
+	return *page
 }
