@@ -2,7 +2,9 @@ package server
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
+
 	p "wiki/src/page"
 )
 
@@ -21,11 +23,8 @@ func ViewHandler(res http.ResponseWriter, req *http.Request) {
 func EditHandler(res http.ResponseWriter, req *http.Request) {
 	title := req.URL.Path[len(EditPath):]
 	page := tryLoadPage(title)
-	fmt.Fprintf(res, "<h1>Editing %s</h1>"+
-		"<form action=\"/wiki/save/%s\" method=\"POST\">"+
-		"<textarea name=\"body\">%s</textarea><br>"+
-		"<input type=\"submit\" value=\"Save\">"+
-		"</form>", page.Title, page.Title, page.Body)
+	editTemplate, _ := template.ParseFiles("src/server/html_templates/edit_form.html")
+	editTemplate.Execute(res, page)
 }
 
 func SaveHandler(res http.ResponseWriter, req *http.Request) {
