@@ -2,33 +2,25 @@ package server
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"regexp"
-
-	p "wiki/src/page"
+	config "wiki/src"
+	h "wiki/src/server/handlers"
 )
 
-type templateDTO struct {
-	Page *p.Page
-	Path string
+func GetViewHandler() http.HandlerFunc {
+	return HandlerMaker(h.ViewHandler)
 }
 
-var (
-	ViewRoute     = "/wiki/view/"
-	EditRoute     = "/wiki/edit/"
-	SaveRoute     = "/wiki/save/"
-	templatesPath = "src/server/html_templates/"
-)
+func GetEditHandler() http.HandlerFunc {
+	return HandlerMaker(h.EditHandler)
+}
 
-var templates = template.Must(
-	template.ParseFiles(
-		templatesPath+"edit_form.html",
-		templatesPath+"view.html",
-	),
-)
+func GetSaveHandler() http.HandlerFunc {
+	return HandlerMaker(h.SaveHandler)
+}
 
-var validPath = regexp.MustCompile(fmt.Sprintf("^(%s|%s|%s)([a-zA-Z0-9_-]+)$", ViewRoute, EditRoute, SaveRoute))
+var validPath = regexp.MustCompile(fmt.Sprintf("^(%s|%s|%s)([a-zA-Z0-9_-]+)$", config.ViewRoute, config.EditRoute, config.SaveRoute))
 
 func HandlerMaker(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
@@ -38,39 +30,5 @@ func HandlerMaker(fn func(http.ResponseWriter, *http.Request, string)) http.Hand
 			return
 		}
 		fn(res, req, match[2])
-	}
-}
-
-func ViewHandler(res http.ResponseWriter, req *http.Request, title string) {
-	page, noPageErr := p.Load(title)
-	if noPageErr != nil {
-		http.Redirect(res, req, EditRoute+title, http.StatusFound)
-		return
-	}
-	dto := templateDTO{Page: page, Path: EditRoute}
-	renderTemplate(res, "view", dto)
-}
-
-func EditHandler(res http.ResponseWriter, req *http.Request, title string) {
-	page, _ := p.Load(title)
-	dto := templateDTO{Page: page, Path: SaveRoute}
-	renderTemplate(res, "edit_form", dto)
-}
-
-func SaveHandler(res http.ResponseWriter, req *http.Request, title string) {
-	body := req.FormValue("body")
-	pageToWrite := p.Page{Title: title, Body: body}
-	err := pageToWrite.Save()
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	http.Redirect(res, req, ViewRoute+title, http.StatusFound)
-}
-
-func renderTemplate(res http.ResponseWriter, templateName string, dto templateDTO) {
-	err := templates.ExecuteTemplate(res, templateName+".html", dto)
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
 	}
 }

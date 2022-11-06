@@ -5,8 +5,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	config "wiki/src"
 	"wiki/src/page"
-	s "wiki/src/server"
+	factory "wiki/src/server"
 )
 
 func main() {
@@ -37,8 +38,8 @@ func readWrite() {
 }
 
 func serve() {
-	http.HandleFunc(s.ViewRoute, s.HandlerMaker(s.ViewHandler))
-	http.HandleFunc(s.EditRoute, s.HandlerMaker(s.EditHandler))
-	http.HandleFunc(s.SaveRoute, s.HandlerMaker(s.SaveHandler))
+	http.HandleFunc(config.ViewRoute, factory.GetViewHandler())
+	http.HandleFunc(config.EditRoute, factory.GetEditHandler())
+	http.HandleFunc(config.SaveRoute, factory.GetSaveHandler())
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
