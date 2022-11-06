@@ -21,25 +21,28 @@ var (
 func ViewHandler(res http.ResponseWriter, req *http.Request) {
 	title := req.URL.Path[len(ViewPath):]
 	page := tryLoadPage(title)
-	editTemplate, _ := template.ParseFiles("src/server/html_templates/view.html")
 	dto := templateDTO{Page: page, Path: EditPath}
-	editTemplate.Execute(res, dto)
+	renderTemplate(res, "view", dto)
 }
 
 func EditHandler(res http.ResponseWriter, req *http.Request) {
 	title := req.URL.Path[len(EditPath):]
 	page := tryLoadPage(title)
-	editTemplate, _ := template.ParseFiles("src/server/html_templates/edit_form.html")
 	dto := templateDTO{Page: page, Path: SavePath}
-	editTemplate.Execute(res, dto)
+	renderTemplate(res, "edit_form", dto)
 }
 
 func SaveHandler(res http.ResponseWriter, req *http.Request) {
-	pageRouteWithTitle := req.URL.Path[len(SavePath):]
+	title := req.URL.Path[len(SavePath):]
 	body := req.FormValue("body")
-	pageToWrite := p.Page{Title: pageRouteWithTitle, Body: body}
+	pageToWrite := p.Page{Title: title, Body: body}
 	pageToWrite.Save()
-	http.Redirect(res, req, ViewPath+pageRouteWithTitle, http.StatusFound)
+	http.Redirect(res, req, ViewPath+title, http.StatusFound)
+}
+
+func renderTemplate(res http.ResponseWriter, templateName string, dto templateDTO) {
+	editTemplate, _ := template.ParseFiles("src/server/html_templates/" + templateName + ".html")
+	editTemplate.Execute(res, dto)
 }
 
 func tryLoadPage(title string) p.Page {
