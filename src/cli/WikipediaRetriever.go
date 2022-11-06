@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sync"
 	"wiki/src/page"
 )
 
@@ -28,19 +29,26 @@ var (
 	articles        = []string{"Wombat", "Platypus", "TempleOS"}
 )
 
-func DownloadArticles() {
+func DownloadArticlesInParallel() {
 	fmt.Println("Setting up a bunch of pages from wikipedia...")
+	var wg sync.WaitGroup
 
 	for _, article := range articles {
-		rawResponse := downloadArticle(article)
-		articleTitle, articleExtract := parseWikipediaResponse(rawResponse)
+		artCopy := article
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			rawResponse := downloadArticle(artCopy)
+			articleTitle, articleExtract := parseWikipediaResponse(rawResponse)
 
-		pageToWrite := page.Page{Title: articleTitle, Body: articleExtract}
-		saveErr := pageToWrite.Save()
-		if saveErr != nil {
-			log.Fatal("[ERROR]: Couldn't save requested page")
-		}
+			pageToWrite := page.Page{Title: articleTitle, Body: articleExtract}
+			saveErr := pageToWrite.Save()
+			if saveErr != nil {
+				log.Fatal("[ERROR]: Couldn't save requested page")
+			}
+		}()
 	}
+	wg.Wait()
 }
 
 func downloadArticle(article string) string {
@@ -66,4 +74,19 @@ func parseWikipediaResponse(res string) (string, string) {
 		return "", ""
 	}
 	return article.Query.Pages[0].Title, article.Query.Pages[0].Extract
+}
+
+func DownloadArticles() {
+	fmt.Println("Setting up a bunch of pages from wikipedia...")
+
+	for _, article := range articles {
+		rawResponse := downloadArticle(article)
+		articleTitle, articleExtract := parseWikipediaResponse(rawResponse)
+
+		pageToWrite := page.Page{Title: articleTitle, Body: articleExtract}
+		saveErr := pageToWrite.Save()
+		if saveErr != nil {
+			log.Fatal("[ERROR]: Couldn't save requested page")
+		}
+	}
 }
