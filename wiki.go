@@ -37,6 +37,8 @@ func readWrite() {
 }
 
 func serve() {
-	http.HandleFunc("/wiki/", server.ViewHandler)
+	http.HandleFunc(server.ViewPath, server.ViewHandler)
+	http.HandleFunc(server.EditPath, server.EditHandler)
+	http.HandleFunc(server.SavePath, server.SaveHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
