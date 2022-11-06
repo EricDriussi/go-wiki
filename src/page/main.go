@@ -1,6 +1,7 @@
 package page
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -9,13 +10,14 @@ type Page struct {
 	Body  string
 }
 
+var defaultWikiRoute = "wiki_pages/"
+
 func (page *Page) Save() error {
-	path := buildPathToRoute()
-	fullPath := path + page.Title + ".txt"
-	err := createDirs(path)
+	err := os.MkdirAll(defaultWikiRoute, os.ModePerm)
 	if err != nil {
 		return err
 	}
+	fullPath := buildPathToPage(page.Title)
 	fileContent := []byte(page.Body)
 	return os.WriteFile(fullPath, fileContent, 0600)
 }
@@ -27,4 +29,9 @@ func Load(title string) (*Page, error) {
 		return &Page{Title: title}, err
 	}
 	return &Page{Title: title, Body: string(body)}, nil
+}
+
+func buildPathToPage(title string) string {
+	cwd, _ := os.Getwd()
+	return fmt.Sprintf("%s/%s/%s.txt", cwd, defaultWikiRoute, title)
 }
