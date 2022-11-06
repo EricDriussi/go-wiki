@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"wiki/src/page"
+	"wiki/src/server"
 )
 
 func main() {
@@ -17,4 +19,7 @@ func main() {
 		log.Fatal("[ERROR]: Couldn't load requested page")
 	}
 	fmt.Println(string(pageToRead.Body))
+
+	http.HandleFunc("/wiki_pages/", server.ViewHandler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
