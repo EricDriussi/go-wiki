@@ -40,11 +40,21 @@ func SaveHandler(res http.ResponseWriter, req *http.Request) {
 	title := req.URL.Path[len(SavePath):]
 	body := req.FormValue("body")
 	pageToWrite := p.Page{Title: title, Body: body}
-	pageToWrite.Save()
+	err := pageToWrite.Save()
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	http.Redirect(res, req, ViewPath+title, http.StatusFound)
 }
 
 func renderTemplate(res http.ResponseWriter, templateName string, dto templateDTO) {
-	editTemplate, _ := template.ParseFiles("src/server/html_templates/" + templateName + ".html")
-	editTemplate.Execute(res, dto)
+	editTemplate, parseError := template.ParseFiles("src/server/html_templates/" + templateName + ".html")
+	if parseError != nil {
+		http.Error(res, parseError.Error(), http.StatusInternalServerError)
+	}
+	execError := editTemplate.Execute(res, dto)
+	if execError != nil {
+		http.Error(res, execError.Error(), http.StatusInternalServerError)
+	}
 }
