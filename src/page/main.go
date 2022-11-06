@@ -1,7 +1,6 @@
 package page
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -9,8 +8,6 @@ type Page struct {
 	Title string
 	Body  string
 }
-
-var defaultWikiRoute = "wiki_pages/"
 
 func (page *Page) Save() error {
 	path := buildPathToRoute()
@@ -30,18 +27,4 @@ func Load(title string) (*Page, error) {
 		return &Page{Title: title}, err
 	}
 	return &Page{Title: title, Body: string(body)}, nil
-}
-
-func createDirs(path string) error {
-	return os.MkdirAll(path, os.ModePerm)
-}
-
-func buildPathToRoute() string {
-	cwd, _ := os.Getwd()
-	return fmt.Sprintf("%s/%s/", cwd, defaultWikiRoute)
-}
-
-func buildPathToPage(title string) string {
-	cwd, _ := os.Getwd()
-	return fmt.Sprintf("%s/%s/%s.txt", cwd, defaultWikiRoute, title)
 }
