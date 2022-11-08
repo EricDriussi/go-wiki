@@ -1,4 +1,4 @@
-package cli
+package cmd
 
 import (
 	"bufio"
@@ -7,24 +7,24 @@ import (
 	"os"
 	"strings"
 	"wiki/src/page"
+
+	"github.com/spf13/cobra"
 )
 
-var articlesToDownload = []string{"Wombat", "Platypus", "TempleOS"}
-
-func PrintWikiPage() {
-	fmt.Println("Write the title of the desired wiki page (no spaces allowed):")
-	var title string
-	fmt.Scanln(&title)
-
-	pageToRead, LoadErr := page.Load(title)
-	if LoadErr != nil {
-		log.Fatal("[ERROR]: Couldn't load requested page")
-	}
-	fmt.Println("Page found:")
-	fmt.Println(string(pageToRead.Body))
+func init() {
+	rootCmd.AddCommand(writeCmd)
 }
 
-func CreateWikiPage() {
+var writeCmd = &cobra.Command{
+	Use:   "write",
+	Short: "Write a wiki page",
+	Long:  "Write a new entry for the Wiki!!",
+	Run: func(cmd *cobra.Command, args []string) {
+		CreatePage()
+	},
+}
+
+func CreatePage() {
 	fmt.Println("Write a title for the new wiki page (no spaces allowed):")
 	var title string
 	fmt.Scanln(&title)
@@ -37,12 +37,6 @@ func CreateWikiPage() {
 	if saveErr != nil {
 		log.Fatal("[ERROR]: Couldn't save requested page")
 	}
-}
-
-func SetupWikiPages() {
-	fmt.Println("Downloading a bunch of pages from wikipedia...")
-	downloadArticles(articlesToDownload)
-	fmt.Println("All done!")
 }
 
 func basicReader() string {

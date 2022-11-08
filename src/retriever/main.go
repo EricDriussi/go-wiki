@@ -1,4 +1,4 @@
-package cli
+package retriever
 
 import (
 	"encoding/json"
@@ -22,7 +22,7 @@ type wikipediaArticle struct {
 	} `json:"query"`
 }
 
-func downloadArticles(articles []string) {
+func DownloadArticles(articles []string) {
 	var wg sync.WaitGroup
 
 	for _, article := range articles {
