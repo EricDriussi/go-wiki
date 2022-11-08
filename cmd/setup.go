@@ -16,14 +16,24 @@ var setupCmd = &cobra.Command{
 	Short: "Set up wiki pages",
 	Long:  "Fetch three wiki pages from Wikipedia",
 	Run: func(cmd *cobra.Command, args []string) {
-		SetupWiki()
+		if len(args) > 0 {
+			SetupCustomArticles(args)
+		} else {
+			SetupDefaultArticles()
+		}
 	},
 }
 
-var articlesToDownload = []string{"Wombat", "Platypus", "TempleOS"}
+var defaultArticles = []string{"Wombat", "Platypus", "TempleOS"}
 
-func SetupWiki() {
+func SetupDefaultArticles() {
 	fmt.Println("Downloading a bunch of pages from wikipedia...")
-	retriever.DownloadArticles(articlesToDownload)
+	retriever.DownloadArticles(defaultArticles)
+	fmt.Println("All done!")
+}
+
+func SetupCustomArticles(art []string) {
+	fmt.Println("Downloading the pages you requested from wikipedia...")
+	retriever.DownloadArticles(art)
 	fmt.Println("All done!")
 }

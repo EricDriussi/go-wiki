@@ -26,7 +26,8 @@ The cli interface is built with cobra (https://github.com/spf13/cobra)!
 			fmt.Println("Wiki Version Number: Dunno, 0.1?")
 		} else {
 			fmt.Println("Launching server on port 8080")
-			SetupWiki()
+			SetupDefaultArticles()
+			// TODO.index page?
 			fmt.Println("Go to http://localhost:8080/wiki/view/Wombat to check it out")
 			server.Run()
 		}

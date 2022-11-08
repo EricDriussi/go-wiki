@@ -2,9 +2,9 @@ package retriever
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"sync"
 	"wiki/src/page"
@@ -18,6 +18,7 @@ type wikipediaArticle struct {
 			_       int64  `json:"ns"`
 			_       int64  `json:"pageid"`
 			Title   string `json:"title"`
+			Missing bool   `json:"missing"`
 		} `json:"pages"`
 	} `json:"query"`
 }
@@ -30,13 +31,18 @@ func DownloadArticles(articles []string) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			rawResponse := downloadSingleArticle(artCopy)
-			articleTitle, articleExtract := parseWikipediaResponse(rawResponse)
 
-			pageToWrite := page.Page{Title: articleTitle, Body: articleExtract}
-			saveErr := pageToWrite.Save()
-			if saveErr != nil {
-				log.Fatal("[ERROR]: Couldn't save requested page")
+			rawResponse := downloadSingleArticle(artCopy)
+			articleTitle, articleExtract, err := parseWikipediaResponse(rawResponse)
+
+			if err != nil {
+				fmt.Printf("[ERROR]: %s\n", err.Error())
+			} else {
+				pageToWrite := page.Page{Title: articleTitle, Body: articleExtract}
+				saveErr := pageToWrite.Save()
+				if saveErr != nil {
+					fmt.Printf("[ERROR]: %s\n", err.Error())
+				}
 			}
 		}()
 	}
@@ -58,12 +64,14 @@ func downloadSingleArticle(article string) string {
 	return string(body)
 }
 
-func parseWikipediaResponse(res string) (string, string) {
+func parseWikipediaResponse(res string) (title string, body string, err error) {
 	var article wikipediaArticle
 	jsonError := json.Unmarshal([]byte(res), &article)
 	if jsonError != nil {
-		fmt.Printf("Couldn't parse json -> %s", jsonError)
-		return "", ""
+		return "", "", errors.New("Something went wrong when parsing wikipedia's response!")
 	}
-	return article.Query.Pages[0].Title, article.Query.Pages[0].Extract
+	if article.Query.Pages[0].Missing {
+		return "", "", errors.New("One of your requested articles wasn't found!")
+	}
+	return article.Query.Pages[0].Title, article.Query.Pages[0].Extract, nil
 }
