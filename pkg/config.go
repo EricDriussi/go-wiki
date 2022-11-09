@@ -47,8 +47,8 @@ func setDefaults() {
 }
 
 func setConfigVars() {
-	ViewRoute = fmt.Sprint(viper.Get(viewRouteConfig))
-	EditRoute = fmt.Sprint(viper.Get(editRouteConfig))
-	SaveRoute = fmt.Sprint(viper.Get(saveRouteConfig))
-	WikiPagesPath = fmt.Sprint(viper.Get(wikiPagesPathConfig))
+	ViewRoute = viper.GetString(viewRouteConfig)
+	EditRoute = viper.GetString(editRouteConfig)
+	SaveRoute = viper.GetString(saveRouteConfig)
+	WikiPagesPath = viper.GetString(wikiPagesPathConfig)
 }
