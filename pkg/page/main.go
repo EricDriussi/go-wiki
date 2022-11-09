@@ -3,6 +3,7 @@ package page
 import (
 	"fmt"
 	"os"
+	"wiki/pkg"
 )
 
 type Page struct {
@@ -10,10 +11,8 @@ type Page struct {
 	Body  string
 }
 
-var defaultWikiRoute = "assets/"
-
 func (page *Page) Save() error {
-	err := os.MkdirAll(defaultWikiRoute, os.ModePerm)
+	err := os.MkdirAll(pkg.WikiPagesPath, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -33,5 +32,5 @@ func Load(title string) (*Page, error) {
 
 func buildPathToPage(title string) string {
 	cwd, _ := os.Getwd()
-	return fmt.Sprintf("%s/%s/%s.txt", cwd, defaultWikiRoute, title)
+	return fmt.Sprintf("%s/%s/%s.txt", cwd, pkg.WikiPagesPath, title)
 }
