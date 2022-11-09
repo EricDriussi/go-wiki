@@ -4,8 +4,8 @@ import (
 	"html/template"
 	"net/http"
 
-	config "wiki/src"
-	p "wiki/src/page"
+	config "wiki/pkg"
+	p "wiki/pkg/page"
 )
 
 type templateDTO struct {
@@ -14,7 +14,7 @@ type templateDTO struct {
 }
 
 var (
-	templatesPath = "src/server/html_templates/"
+	templatesPath = "pkg/server/html_templates/"
 	templates     = template.Must(
 		template.ParseFiles(
 			templatesPath+"edit_form.html",

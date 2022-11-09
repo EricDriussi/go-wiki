@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"wiki/src/page"
+	"wiki/pkg/page"
 
 	"github.com/spf13/cobra"
 )

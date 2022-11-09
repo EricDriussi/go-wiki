@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"wiki/src/server"
+	"wiki/pkg/server"
 
 	"github.com/spf13/cobra"
 )

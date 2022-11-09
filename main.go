@@ -2,10 +2,10 @@ package main
 
 import (
 	"wiki/cmd"
-	"wiki/src"
+	"wiki/pkg"
 )
 
 func main() {
-	src.LoadConfig()
+	pkg.LoadConfig()
 	cmd.Execute()
 }

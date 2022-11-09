@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"sync"
-	"wiki/src/page"
+	"wiki/pkg/page"
 )
 
 type wikipediaArticle struct {

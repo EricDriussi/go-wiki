@@ -1,4 +1,4 @@
-package src
+package pkg
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ func LoadConfig() {
 	setDefaults()
 
 	viper.SetConfigName("conf")
-	viper.AddConfigPath("./src/")
+	viper.AddConfigPath("./pkg/")
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(fmt.Errorf("fatal error config file: %w", err))

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"wiki/src/retriever"
+	"wiki/pkg/retriever"
 
 	"github.com/spf13/cobra"
 )

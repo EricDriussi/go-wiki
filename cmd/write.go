@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
-	"wiki/src/page"
+	"wiki/pkg/page"
 
 	"github.com/spf13/cobra"
 )

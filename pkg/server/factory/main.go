@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	config "wiki/src"
-	h "wiki/src/server/handlers"
+	config "wiki/pkg"
+	h "wiki/pkg/server/handlers"
 )
 
 func GetViewHandler() http.HandlerFunc {
