@@ -3,7 +3,7 @@ package page
 import (
 	"fmt"
 	"os"
-	"wiki/pkg"
+	"wiki/pkg/config"
 )
 
 type Page struct {
@@ -12,7 +12,7 @@ type Page struct {
 }
 
 func (page *Page) Save() error {
-	err := os.MkdirAll(pkg.WikiPagesPath, os.ModePerm)
+	err := os.MkdirAll(config.WikiPagesPath, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -32,5 +32,5 @@ func Load(title string) (*Page, error) {
 
 func buildPathToPage(title string) string {
 	cwd, _ := os.Getwd()
-	return fmt.Sprintf("%s/%s/%s.txt", cwd, pkg.WikiPagesPath, title)
+	return fmt.Sprintf("%s/%s/%s.txt", cwd, config.WikiPagesPath, title)
 }

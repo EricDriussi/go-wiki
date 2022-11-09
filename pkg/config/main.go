@@ -1,4 +1,6 @@
-package pkg
+package config
+
+// TODO.Refactor
 
 import (
 	"fmt"
@@ -21,7 +23,7 @@ var (
 	templatesPathConfig = "resources.TemplatesPath"
 )
 
-func LoadConfig() {
+func Load() {
 	setDefaults()
 
 	viper.SetConfigName("conf")

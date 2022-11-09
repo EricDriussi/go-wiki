@@ -3,7 +3,7 @@ package handlers
 import (
 	"html/template"
 	"net/http"
-	"wiki/pkg"
+	"wiki/pkg/config"
 
 	p "wiki/pkg/page"
 )
@@ -16,16 +16,16 @@ type templateDTO struct {
 func ViewHandler(res http.ResponseWriter, req *http.Request, title string) {
 	page, noPageErr := p.Load(title)
 	if noPageErr != nil {
-		http.Redirect(res, req, pkg.EditRoute+title, http.StatusFound)
+		http.Redirect(res, req, config.EditRoute+title, http.StatusFound)
 		return
 	}
-	dto := templateDTO{Page: page, Path: pkg.EditRoute}
+	dto := templateDTO{Page: page, Path: config.EditRoute}
 	renderTemplateCache(res, "view", dto)
 }
 
 func EditHandler(res http.ResponseWriter, req *http.Request, title string) {
 	page, _ := p.Load(title)
-	dto := templateDTO{Page: page, Path: pkg.SaveRoute}
+	dto := templateDTO{Page: page, Path: config.SaveRoute}
 	renderTemplateCache(res, "edit_form", dto)
 }
 
@@ -37,13 +37,13 @@ func SaveHandler(res http.ResponseWriter, req *http.Request, title string) {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(res, req, pkg.ViewRoute+title, http.StatusFound)
+	http.Redirect(res, req, config.ViewRoute+title, http.StatusFound)
 }
 
 func renderTemplateCache(res http.ResponseWriter, templateName string, dto templateDTO) {
 	templates := template.Must(template.ParseFiles(
-		pkg.TemplatesPath+"edit_form.html",
-		pkg.TemplatesPath+"view.html",
+		config.TemplatesPath+"edit_form.html",
+		config.TemplatesPath+"view.html",
 	),
 	)
 

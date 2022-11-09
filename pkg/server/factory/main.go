@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	config "wiki/pkg"
+	"wiki/pkg/config"
 	h "wiki/pkg/server/handlers"
 )
 
