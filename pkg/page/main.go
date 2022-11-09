@@ -11,13 +11,27 @@ type Page struct {
 	Body  string
 }
 
-func (page *Page) Save() error {
+func New() Page {
+	return Page{}
+}
+
+func (this Page) WithTitle(title string) Page {
+	this.Title = title
+	return this
+}
+
+func (this Page) WithBody(body string) Page {
+	this.Title = body
+	return this
+}
+
+func (this *Page) Save() error {
 	err := os.MkdirAll(config.WikiPagesPath, os.ModePerm)
 	if err != nil {
 		return err
 	}
-	fullPath := buildPathToPage(page.Title)
-	fileContent := []byte(page.Body)
+	fullPath := buildPathToPage(this.Title)
+	fileContent := []byte(this.Body)
 	return os.WriteFile(fullPath, fileContent, 0600)
 }
 

@@ -32,7 +32,7 @@ func CreatePage() {
 	fmt.Println("Write the content of the new wiki page:")
 	body := basicReader()
 
-	pageToWrite := page.Page{Title: title, Body: body}
+	pageToWrite := page.New().WithTitle(title).WithBody(body)
 	saveErr := pageToWrite.Save()
 	if saveErr != nil {
 		log.Fatal("[ERROR]: Couldn't save requested page")

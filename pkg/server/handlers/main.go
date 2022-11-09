@@ -4,17 +4,16 @@ import (
 	"html/template"
 	"net/http"
 	"wiki/pkg/config"
-
-	p "wiki/pkg/page"
+	"wiki/pkg/page"
 )
 
 type templateDTO struct {
-	Page *p.Page
+	Page *page.Page
 	Path string
 }
 
 func ViewHandler(res http.ResponseWriter, req *http.Request, title string) {
-	page, noPageErr := p.Load(title)
+	page, noPageErr := page.Load(title)
 	if noPageErr != nil {
 		http.Redirect(res, req, config.EditRoute+title, http.StatusFound)
 		return
@@ -24,14 +23,14 @@ func ViewHandler(res http.ResponseWriter, req *http.Request, title string) {
 }
 
 func EditHandler(res http.ResponseWriter, req *http.Request, title string) {
-	page, _ := p.Load(title)
+	page, _ := page.Load(title)
 	dto := templateDTO{Page: page, Path: config.SaveRoute}
 	renderTemplateCache(res, "edit_form", dto)
 }
 
 func SaveHandler(res http.ResponseWriter, req *http.Request, title string) {
 	body := req.FormValue("body")
-	pageToWrite := p.Page{Title: title, Body: body}
+	pageToWrite := page.New().WithTitle(title).WithBody(body)
 	err := pageToWrite.Save()
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)

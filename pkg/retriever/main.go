@@ -38,7 +38,7 @@ func DownloadArticles(articles []string) {
 			if err != nil {
 				fmt.Printf("[ERROR]: %s\n", err.Error())
 			} else {
-				pageToWrite := page.Page{Title: articleTitle, Body: articleExtract}
+				pageToWrite := page.New().WithTitle(articleTitle).WithBody(articleExtract)
 				saveErr := pageToWrite.Save()
 				if saveErr != nil {
 					fmt.Printf("[ERROR]: %s\n", err.Error())
