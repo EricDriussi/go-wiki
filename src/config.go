@@ -1,7 +1,5 @@
 package src
 
-// TODO.refactor
-
 import (
 	"fmt"
 
@@ -13,12 +11,14 @@ var (
 	ViewRoute string
 	EditRoute string
 	SaveRoute string
+
+	viewRouteConfig = "routes.ViewRoute"
+	editRouteConfig = "routes.EditRoute"
+	saveRouteConfig = "routes.SaveRoute"
 )
 
 func LoadConfig() {
-	viper.SetDefault("routes.EditRoute", "/wiki/edit/")
-	viper.SetDefault("routes.SaveRoute", "/wiki/save/")
-	viper.SetDefault("routes.ViewRoute", "/wiki/view/")
+	setDefaults()
 
 	viper.SetConfigName("conf")
 	viper.AddConfigPath("./src/")
@@ -26,17 +26,25 @@ func LoadConfig() {
 	if err != nil {
 		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
-	ViewRoute = fmt.Sprint(viper.Get("routes.ViewRoute"))
-	EditRoute = fmt.Sprint(viper.Get("routes.EditRoute"))
-	SaveRoute = fmt.Sprint(viper.Get("routes.SaveRoute"))
+	setConfigVars()
 
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		if e.Op.String() == "WRITE" {
 			fmt.Println("Config file updated, reloading data...")
-			ViewRoute = fmt.Sprint(viper.Get("routes.ViewRoute"))
-			EditRoute = fmt.Sprint(viper.Get("routes.EditRoute"))
-			SaveRoute = fmt.Sprint(viper.Get("routes.SaveRoute"))
+			setConfigVars()
 		}
 	})
 	viper.WatchConfig()
+}
+
+func setDefaults() {
+	viper.SetDefault(viewRouteConfig, "/wiki/view/")
+	viper.SetDefault(editRouteConfig, "/wiki/edit/")
+	viper.SetDefault(saveRouteConfig, "/wiki/save/")
+}
+
+func setConfigVars() {
+	ViewRoute = fmt.Sprint(viper.Get(viewRouteConfig))
+	EditRoute = fmt.Sprint(viper.Get(editRouteConfig))
+	SaveRoute = fmt.Sprint(viper.Get(saveRouteConfig))
 }
