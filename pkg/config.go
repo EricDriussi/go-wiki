@@ -12,11 +12,13 @@ var (
 	EditRoute     string
 	SaveRoute     string
 	WikiPagesPath string
+	TemplatesPath string
 
 	viewRouteConfig     = "routes.ViewRoute"
 	editRouteConfig     = "routes.EditRoute"
 	saveRouteConfig     = "routes.SaveRoute"
 	wikiPagesPathConfig = "resources.WikiPagesPath"
+	templatesPathConfig = "resources.TemplatesPath"
 )
 
 func LoadConfig() {
@@ -44,6 +46,7 @@ func setDefaults() {
 	viper.SetDefault(editRouteConfig, "/wiki/edit/")
 	viper.SetDefault(saveRouteConfig, "/wiki/save/")
 	viper.SetDefault(wikiPagesPathConfig, "assets/")
+	viper.SetDefault(templatesPathConfig, "web/")
 }
 
 func setConfigVars() {
@@ -51,4 +54,5 @@ func setConfigVars() {
 	EditRoute = viper.GetString(editRouteConfig)
 	SaveRoute = viper.GetString(saveRouteConfig)
 	WikiPagesPath = viper.GetString(wikiPagesPathConfig)
+	TemplatesPath = viper.GetString(templatesPathConfig)
 }
