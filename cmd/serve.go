@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"wiki/src/server"
 
 	"github.com/spf13/cobra"
@@ -16,6 +17,7 @@ var serveCmd = &cobra.Command{
 	// TODO.index page?
 	Long: "Serve locally stored wiki pages on http://localhost:8080/wiki/view",
 	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("Go to http://localhost:8080/wiki/view/Wombat")
 		server.Run()
 	},
 }
