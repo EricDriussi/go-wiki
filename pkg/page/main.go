@@ -10,7 +10,7 @@ type Page struct {
 	Body  string
 }
 
-var defaultWikiRoute = "wiki_pages/"
+var defaultWikiRoute = "assets/"
 
 func (page *Page) Save() error {
 	err := os.MkdirAll(defaultWikiRoute, os.ModePerm)
