@@ -21,7 +21,7 @@ func (this Page) WithTitle(title string) Page {
 }
 
 func (this Page) WithBody(body string) Page {
-	this.Title = body
+	this.Body = body
 	return this
 }
 
