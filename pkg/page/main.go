@@ -11,8 +11,8 @@ func (this *Page) Save() error {
 	if err != nil {
 		return err
 	}
-	fullPath := buildPathToPage(this.Title)
-	fileContent := []byte(this.Body)
+	fullPath := buildPathToPage(this.title)
+	fileContent := []byte(this.body)
 	return os.WriteFile(fullPath, fileContent, 0600)
 }
 
@@ -20,9 +20,9 @@ func Load(title string) (*Page, error) {
 	fullPath := buildPathToPage(title)
 	body, err := os.ReadFile(fullPath)
 	if err != nil {
-		return &Page{Title: title}, err
+		return &Page{title: title}, err
 	}
-	return &Page{Title: title, Body: string(body)}, nil
+	return &Page{title: title, body: string(body)}, nil
 }
 
 func buildPathToPage(title string) string {

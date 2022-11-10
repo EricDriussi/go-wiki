@@ -31,5 +31,5 @@ func PrintPage() {
 		log.Fatal("[ERROR]: Couldn't load requested page")
 	}
 	fmt.Println("Page found:")
-	fmt.Println(string(pageToRead.Body))
+	fmt.Println(string(pageToRead.Body()))
 }

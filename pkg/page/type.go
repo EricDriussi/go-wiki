@@ -1,8 +1,8 @@
 package page
 
 type Page struct {
-	Title string
-	Body  string
+	title string
+	body  string
 }
 
 func New() Page {
@@ -10,11 +10,19 @@ func New() Page {
 }
 
 func (this Page) WithTitle(title string) Page {
-	this.Title = title
+	this.title = title
 	return this
 }
 
+func (this Page) Title() string {
+	return this.title
+}
+
 func (this Page) WithBody(body string) Page {
-	this.Body = body
+	this.body = body
 	return this
+}
+
+func (this Page) Body() string {
+	return this.body
 }
