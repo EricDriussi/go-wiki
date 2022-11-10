@@ -8,6 +8,10 @@ import (
 	h "wiki/pkg/server/handlers"
 )
 
+func GetIndexHandler() http.HandlerFunc {
+	return HandlerMaker(h.IndexHandler)
+}
+
 func GetViewHandler() http.HandlerFunc {
 	return HandlerMaker(h.ViewHandler)
 }
@@ -22,7 +26,8 @@ func GetSaveHandler() http.HandlerFunc {
 
 func HandlerMaker(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	validPath := regexp.MustCompile(
-		fmt.Sprintf("^(%s|%s|%s)([a-zA-Z0-9_-]+)$",
+		fmt.Sprintf("^%s$|^(%s|%s|%s)([a-zA-Z0-9_-]+)$",
+			config.IndexRoute,
 			config.ViewRoute,
 			config.EditRoute,
 			config.SaveRoute,

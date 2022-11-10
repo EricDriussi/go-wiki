@@ -8,6 +8,7 @@ import (
 )
 
 func Run() {
+	http.HandleFunc(config.IndexRoute, factory.GetIndexHandler())
 	http.HandleFunc(config.ViewRoute, factory.GetViewHandler())
 	http.HandleFunc(config.EditRoute, factory.GetEditHandler())
 	http.HandleFunc(config.SaveRoute, factory.GetSaveHandler())

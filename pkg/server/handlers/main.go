@@ -1,5 +1,7 @@
 package handlers
 
+// TODO.refactor
+
 import (
 	"html/template"
 	"net/http"
@@ -10,6 +12,15 @@ import (
 type templateDTO struct {
 	Page *page.Page
 	Path string
+}
+
+func IndexHandler(res http.ResponseWriter, req *http.Request, _ string) {
+	allPages := page.LoadAll()
+	dtos := []templateDTO{}
+	for _, singlePage := range allPages {
+		dtos = append(dtos, templateDTO{Page: singlePage, Path: config.EditRoute})
+	}
+	renderTemplateCacheIndex(res, "index", dtos)
 }
 
 func ViewHandler(res http.ResponseWriter, req *http.Request, title string) {
@@ -47,6 +58,18 @@ func renderTemplateCache(res http.ResponseWriter, templateName string, dto templ
 	)
 
 	err := templates.ExecuteTemplate(res, templateName+".html", dto)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func renderTemplateCacheIndex(res http.ResponseWriter, templateName string, dtos []templateDTO) {
+	templates := template.Must(template.ParseFiles(
+		config.TemplatesPath + "index.html",
+	),
+	)
+
+	err := templates.ExecuteTemplate(res, templateName+".html", dtos)
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 	}
