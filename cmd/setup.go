@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"wiki/pkg/retriever"
+	"wiki/internal/wikipedia"
 
 	"github.com/spf13/cobra"
 )
@@ -28,12 +28,12 @@ var defaultArticles = []string{"Wombat", "Platypus", "TempleOS"}
 
 func SetupDefaultArticles() {
 	fmt.Println("Downloading a bunch of pages from wikipedia...")
-	retriever.DownloadArticles(defaultArticles)
+	wikipedia.DownloadArticles(defaultArticles)
 	fmt.Println("All done!")
 }
 
 func SetupCustomArticles(art []string) {
 	fmt.Println("Downloading the pages you requested from wikipedia...")
-	retriever.DownloadArticles(art)
+	wikipedia.DownloadArticles(art)
 	fmt.Println("All done!")
 }

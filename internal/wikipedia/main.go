@@ -1,4 +1,4 @@
-package retriever
+package wikipedia
 
 import (
 	"encoding/json"
