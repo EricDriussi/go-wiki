@@ -52,16 +52,16 @@ func Save(res http.ResponseWriter, req *http.Request, title string) {
 	http.Redirect(res, req, config.ViewRoute+title, http.StatusFound)
 }
 
-func render(res http.ResponseWriter, templateName string, dto templateDTO.Valid) {
+func render(res http.ResponseWriter, templateName string, dto interface{}) {
 	funcMap := template.FuncMap{"extract": firstFewLines}
 	templates := template.Must(
 		template.
 			New(templateName).
 			Funcs(funcMap).
 			ParseFiles(
-				config.TemplatesPath+"index.html",
-				config.TemplatesPath+"edit_form.html",
-				config.TemplatesPath+"view.html",
+				config.TemplatesPath+templateName,
+				config.TemplatesPath+templateName,
+				config.TemplatesPath+templateName,
 			),
 	)
 
