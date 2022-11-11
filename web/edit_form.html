@@ -1,9 +1,14 @@
 {{$save := index .Paths "SavePath"}}
 {{$back := index .Paths "BackPath"}}
 
-<h1>Editing {{.Page.Title}}</h1>
+<body>
+  <p>[<a href="{{$back}}{{.Page.Title}}">
+      <- Back!</a>]</p>
 
-<form action="{{$save}}{{.Page.Title}}" method="POST">
-  <div><textarea name="body" rows="20" cols="80">{{printf "%s" .Page.Body}}</textarea></div>
-  <div><input type="submit" value="Save"></div>
-</form>
+  <h1>Editing {{.Page.Title}}</h1>
+
+  <form action="{{$save}}{{.Page.Title}}" method="POST">
+    <div><textarea name="body" rows="20" cols="80">{{printf "%s" .Page.Body}}</textarea></div>
+    <div><input type="submit" value="Save"></div>
+  </form>
+</body>

@@ -1,8 +1,12 @@
 {{$edit := index .Paths "EditPath"}}
 {{$back := index .Paths "BackPath"}}
 
-<h1>{{.Page.Title}}</h1>
+<body>
+  <p>[<a href="{{$back}}">Home</a>]</p>
 
-<p>[<a href="{{$edit}}{{.Page.Title}}">edit</a>]</p>
+  <h1>{{.Page.Title}}</h1>
 
-<div>{{printf "%s" .Page.Body}}</div>
+  <p>[<a href="{{$edit}}{{.Page.Title}}">edit</a>]</p>
+
+  <div>{{printf "%s" .Page.Body}}</div>
+</body>
