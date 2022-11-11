@@ -18,7 +18,7 @@ func IndexHandler(res http.ResponseWriter, req *http.Request, _ string) {
 	allPages := page.LoadAll()
 	dtos := []templateDTO{}
 	for _, singlePage := range allPages {
-		dtos = append(dtos, templateDTO{Page: singlePage, Path: config.EditRoute})
+		dtos = append(dtos, templateDTO{Page: singlePage, Path: config.ViewRoute})
 	}
 	renderTemplateCacheIndex(res, "index", dtos)
 }
@@ -64,7 +64,8 @@ func renderTemplateCache(res http.ResponseWriter, templateName string, dto templ
 }
 
 func renderTemplateCacheIndex(res http.ResponseWriter, templateName string, dtos []templateDTO) {
-	templates := template.Must(template.ParseFiles(
+	funcMap := template.FuncMap{"extract": firstFewLines}
+	templates := template.Must(template.New(templateName).Funcs(funcMap).ParseFiles(
 		config.TemplatesPath + "index.html",
 	),
 	)
@@ -73,4 +74,11 @@ func renderTemplateCacheIndex(res http.ResponseWriter, templateName string, dtos
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func firstFewLines(body string) string {
+	if len(body) < 501 {
+		return body
+	}
+	return body[0:500] + "..."
 }

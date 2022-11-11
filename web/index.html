@@ -1,6 +1,6 @@
 {{range .}}
 <h1>{{.Page.Title}}</h1>
-<p>{{printf "%s" .Page.Body}}</p>
-<p>[<a href="{{.Path}}{{.Page.Title}}">edit</a>]</p>
+<p>{{extract .Page.Body}}</p>
+[<a href="{{.Path}}{{.Page.Title}}">Read More</a>]
 <hr>
 {{end}}
