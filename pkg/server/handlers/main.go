@@ -1,26 +1,20 @@
 package handlers
 
-// TODO.refactor
-
 import (
-	"html/template"
 	"net/http"
 	"wiki/pkg/config"
 	"wiki/pkg/page"
+	"wiki/pkg/server/dto"
+	"wiki/pkg/server/render"
 )
 
-type templateDTO struct {
-	Page *page.Page
-	Path string
-}
-
 func IndexHandler(res http.ResponseWriter, req *http.Request, _ string) {
-	allPages := page.LoadAll()
-	dtos := []templateDTO{}
-	for _, singlePage := range allPages {
-		dtos = append(dtos, templateDTO{Page: singlePage, Path: config.ViewRoute})
+	paths := map[string]string{
+		"ViewPath": config.ViewRoute,
+		"EditPath": config.EditRoute,
 	}
-	renderTemplateCacheIndex(res, "index", dtos)
+	peter := dto.Multi{Pages: page.LoadAll(), Paths: paths}
+	render.MultiPage(res, "index.html", peter)
 }
 
 func ViewHandler(res http.ResponseWriter, req *http.Request, title string) {
@@ -29,14 +23,14 @@ func ViewHandler(res http.ResponseWriter, req *http.Request, title string) {
 		http.Redirect(res, req, config.EditRoute+title, http.StatusFound)
 		return
 	}
-	dto := templateDTO{Page: page, Path: config.EditRoute}
-	renderTemplateCache(res, "view", dto)
+	dto := dto.TemplateDTO{Page: page, Path: config.EditRoute}
+	render.SinglePage(res, "view.html", dto)
 }
 
 func EditHandler(res http.ResponseWriter, req *http.Request, title string) {
 	page, _ := page.Load(title)
-	dto := templateDTO{Page: page, Path: config.SaveRoute}
-	renderTemplateCache(res, "edit_form", dto)
+	dto := dto.TemplateDTO{Page: page, Path: config.SaveRoute}
+	render.SinglePage(res, "edit_form.html", dto)
 }
 
 func SaveHandler(res http.ResponseWriter, req *http.Request, title string) {
@@ -48,37 +42,4 @@ func SaveHandler(res http.ResponseWriter, req *http.Request, title string) {
 		return
 	}
 	http.Redirect(res, req, config.ViewRoute+title, http.StatusFound)
-}
-
-func renderTemplateCache(res http.ResponseWriter, templateName string, dto templateDTO) {
-	templates := template.Must(template.ParseFiles(
-		config.TemplatesPath+"edit_form.html",
-		config.TemplatesPath+"view.html",
-	),
-	)
-
-	err := templates.ExecuteTemplate(res, templateName+".html", dto)
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func renderTemplateCacheIndex(res http.ResponseWriter, templateName string, dtos []templateDTO) {
-	funcMap := template.FuncMap{"extract": firstFewLines}
-	templates := template.Must(template.New(templateName).Funcs(funcMap).ParseFiles(
-		config.TemplatesPath + "index.html",
-	),
-	)
-
-	err := templates.ExecuteTemplate(res, templateName+".html", dtos)
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func firstFewLines(body string) string {
-	if len(body) < 501 {
-		return body
-	}
-	return body[0:500] + "..."
 }
