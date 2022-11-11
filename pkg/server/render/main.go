@@ -7,7 +7,7 @@ import (
 	"wiki/pkg/server/dto"
 )
 
-func SinglePage(res http.ResponseWriter, templateName string, dto dto.TemplateDTO) {
+func SinglePage(res http.ResponseWriter, templateName string, dto dto.Single) {
 	templates := template.Must(template.ParseFiles(
 		config.TemplatesPath+"edit_form.html",
 		config.TemplatesPath+"view.html",

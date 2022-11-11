@@ -18,18 +18,26 @@ func IndexHandler(res http.ResponseWriter, req *http.Request, _ string) {
 }
 
 func ViewHandler(res http.ResponseWriter, req *http.Request, title string) {
+	paths := map[string]string{
+		"EditPath": config.EditRoute,
+		"BackPath": config.IndexRoute,
+	}
 	page, noPageErr := page.Load(title)
 	if noPageErr != nil {
 		http.Redirect(res, req, config.EditRoute+title, http.StatusFound)
 		return
 	}
-	dto := dto.TemplateDTO{Page: page, Path: config.EditRoute}
+	dto := dto.Single{Page: page, Paths: paths}
 	render.SinglePage(res, "view.html", dto)
 }
 
 func EditHandler(res http.ResponseWriter, req *http.Request, title string) {
+	paths := map[string]string{
+		"SavePath": config.SaveRoute,
+		"BackPath": config.ViewRoute,
+	}
 	page, _ := page.Load(title)
-	dto := dto.TemplateDTO{Page: page, Path: config.SaveRoute}
+	dto := dto.Single{Page: page, Paths: paths}
 	render.SinglePage(res, "edit_form.html", dto)
 }
 
