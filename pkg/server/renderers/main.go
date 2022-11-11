@@ -7,7 +7,7 @@ import (
 	"wiki/pkg/server/dtos"
 )
 
-func SinglePage(res http.ResponseWriter, templateName string, dto templateDTO.Single) {
+func SinglePage(res http.ResponseWriter, templateName string, dto templateDTO.Valid) {
 	templates := template.Must(template.ParseFiles(
 		config.TemplatesPath+"edit_form.html",
 		config.TemplatesPath+"view.html",
@@ -20,14 +20,14 @@ func SinglePage(res http.ResponseWriter, templateName string, dto templateDTO.Si
 	}
 }
 
-func MultiPage(res http.ResponseWriter, templateName string, dtos templateDTO.Multi) {
+func MultiPage(res http.ResponseWriter, templateName string, dto templateDTO.Valid) {
 	funcMap := template.FuncMap{"extract": firstFewLines}
 	templates := template.Must(template.New(templateName).Funcs(funcMap).ParseFiles(
 		config.TemplatesPath + "index.html",
 	),
 	)
 
-	err := templates.ExecuteTemplate(res, templateName, dtos)
+	err := templates.ExecuteTemplate(res, templateName, dto)
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 	}
