@@ -4,10 +4,10 @@ import (
 	"html/template"
 	"net/http"
 	"wiki/pkg/config"
-	"wiki/pkg/server/dto"
+	"wiki/pkg/server/dtos"
 )
 
-func SinglePage(res http.ResponseWriter, templateName string, dto dto.Single) {
+func SinglePage(res http.ResponseWriter, templateName string, dto templateDTO.Single) {
 	templates := template.Must(template.ParseFiles(
 		config.TemplatesPath+"edit_form.html",
 		config.TemplatesPath+"view.html",
@@ -20,7 +20,7 @@ func SinglePage(res http.ResponseWriter, templateName string, dto dto.Single) {
 	}
 }
 
-func MultiPage(res http.ResponseWriter, templateName string, dtos dto.Multi) {
+func MultiPage(res http.ResponseWriter, templateName string, dtos templateDTO.Multi) {
 	funcMap := template.FuncMap{"extract": firstFewLines}
 	templates := template.Must(template.New(templateName).Funcs(funcMap).ParseFiles(
 		config.TemplatesPath + "index.html",

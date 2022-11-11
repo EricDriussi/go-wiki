@@ -1,4 +1,4 @@
-package dto
+package templateDTO
 
 import "wiki/pkg/page"
 

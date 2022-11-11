@@ -5,23 +5,23 @@ import (
 	"net/http"
 	"regexp"
 	"wiki/pkg/config"
-	h "wiki/pkg/server/handlers"
+	"wiki/pkg/server/handlers"
 )
 
-func GetIndexHandler() http.HandlerFunc {
-	return HandlerMaker(h.IndexHandler)
+func IndexHandler() http.HandlerFunc {
+	return HandlerMaker(handle.Index)
 }
 
-func GetViewHandler() http.HandlerFunc {
-	return HandlerMaker(h.ViewHandler)
+func ViewHandler() http.HandlerFunc {
+	return HandlerMaker(handle.View)
 }
 
-func GetEditHandler() http.HandlerFunc {
-	return HandlerMaker(h.EditHandler)
+func EditHandler() http.HandlerFunc {
+	return HandlerMaker(handle.Edit)
 }
 
-func GetSaveHandler() http.HandlerFunc {
-	return HandlerMaker(h.SaveHandler)
+func SaveHandler() http.HandlerFunc {
+	return HandlerMaker(handle.Save)
 }
 
 func HandlerMaker(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {

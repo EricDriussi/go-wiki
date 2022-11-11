@@ -1,23 +1,23 @@
-package handlers
+package handle
 
 import (
 	"net/http"
 	"wiki/pkg/config"
 	"wiki/pkg/page"
-	"wiki/pkg/server/dto"
-	"wiki/pkg/server/render"
+	"wiki/pkg/server/dtos"
+	"wiki/pkg/server/renderers"
 )
 
-func IndexHandler(res http.ResponseWriter, req *http.Request, _ string) {
+func Index(res http.ResponseWriter, req *http.Request, _ string) {
 	paths := map[string]string{
 		"ViewPath": config.ViewRoute,
 		"EditPath": config.EditRoute,
 	}
-	peter := dto.Multi{Pages: page.LoadAll(), Paths: paths}
+	peter := templateDTO.Multi{Pages: page.LoadAll(), Paths: paths}
 	render.MultiPage(res, "index.html", peter)
 }
 
-func ViewHandler(res http.ResponseWriter, req *http.Request, title string) {
+func View(res http.ResponseWriter, req *http.Request, title string) {
 	paths := map[string]string{
 		"EditPath": config.EditRoute,
 		"BackPath": config.IndexRoute,
@@ -27,21 +27,21 @@ func ViewHandler(res http.ResponseWriter, req *http.Request, title string) {
 		http.Redirect(res, req, config.EditRoute+title, http.StatusFound)
 		return
 	}
-	dto := dto.Single{Page: page, Paths: paths}
+	dto := templateDTO.Single{Page: page, Paths: paths}
 	render.SinglePage(res, "view.html", dto)
 }
 
-func EditHandler(res http.ResponseWriter, req *http.Request, title string) {
+func Edit(res http.ResponseWriter, req *http.Request, title string) {
 	paths := map[string]string{
 		"SavePath": config.SaveRoute,
 		"BackPath": config.ViewRoute,
 	}
 	page, _ := page.Load(title)
-	dto := dto.Single{Page: page, Paths: paths}
+	dto := templateDTO.Single{Page: page, Paths: paths}
 	render.SinglePage(res, "edit_form.html", dto)
 }
 
-func SaveHandler(res http.ResponseWriter, req *http.Request, title string) {
+func Save(res http.ResponseWriter, req *http.Request, title string) {
 	body := req.FormValue("body")
 	pageToWrite := page.New().WithTitle(title).WithBody(body)
 	err := pageToWrite.Save()
