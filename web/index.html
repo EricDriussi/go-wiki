@@ -1,6 +1,13 @@
-{{range .}}
-<h1>{{.Page.Title}}</h1>
-<p>{{extract .Page.Body}}</p>
-[<a href="{{.Path}}{{.Page.Title}}">Read More</a>]
-<hr>
+{{$view := index .Paths "ViewPath"}}
+{{$edit := index .Paths "EditPath"}}
+
+{{range $i, $page := .Pages}}
+
+<body>
+  <h1>{{$page.Title}}</h1>
+  <p>{{extract $page.Body}}</p>
+  [<a href='{{$view}}{{$page.Title}}'>Read More</a>] - [<a href='{{$edit}}{{$page.Title}}'>Edit ...</a>]
+  <hr>
+</body>
+
 {{end}}
