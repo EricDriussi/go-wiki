@@ -14,10 +14,9 @@ func init() {
 var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Serve wiki on port 8080",
-	// TODO.index page?
-	Long: "Serve locally stored wiki pages on http://localhost:8080/wiki/view",
+	Long:  "Serve locally stored wiki pages on http://localhost:8080/wiki",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Go to http://localhost:8080/wiki/view/Wombat")
+		fmt.Println("Go to http://localhost:8080/wiki")
 		server.Run()
 	},
 }
