@@ -1,11 +1,11 @@
 package handle
 
 import (
+	"html/template"
 	"net/http"
 	"wiki/pkg/config"
 	"wiki/pkg/page"
-	"wiki/pkg/server/dtos"
-	"wiki/pkg/server/renderers"
+	templateDTO "wiki/pkg/server/dtos"
 )
 
 func Index(res http.ResponseWriter, req *http.Request, _ string) {
@@ -14,7 +14,7 @@ func Index(res http.ResponseWriter, req *http.Request, _ string) {
 		"EditPath": config.EditRoute,
 	}
 	peter := templateDTO.Multi{Pages: page.LoadAll(), Paths: paths}
-	render.MultiPage(res, "index.html", peter)
+	render(res, "index.html", peter)
 }
 
 func View(res http.ResponseWriter, req *http.Request, title string) {
@@ -28,7 +28,7 @@ func View(res http.ResponseWriter, req *http.Request, title string) {
 		return
 	}
 	dto := templateDTO.Single{Page: page, Paths: paths}
-	render.SinglePage(res, "view.html", dto)
+	render(res, "view.html", dto)
 }
 
 func Edit(res http.ResponseWriter, req *http.Request, title string) {
@@ -38,7 +38,7 @@ func Edit(res http.ResponseWriter, req *http.Request, title string) {
 	}
 	page, _ := page.Load(title)
 	dto := templateDTO.Single{Page: page, Paths: paths}
-	render.SinglePage(res, "edit_form.html", dto)
+	render(res, "edit_form.html", dto)
 }
 
 func Save(res http.ResponseWriter, req *http.Request, title string) {
@@ -50,4 +50,30 @@ func Save(res http.ResponseWriter, req *http.Request, title string) {
 		return
 	}
 	http.Redirect(res, req, config.ViewRoute+title, http.StatusFound)
+}
+
+func render(res http.ResponseWriter, templateName string, dto templateDTO.Valid) {
+	funcMap := template.FuncMap{"extract": firstFewLines}
+	templates := template.Must(
+		template.
+			New(templateName).
+			Funcs(funcMap).
+			ParseFiles(
+				config.TemplatesPath+"index.html",
+				config.TemplatesPath+"edit_form.html",
+				config.TemplatesPath+"view.html",
+			),
+	)
+
+	err := templates.ExecuteTemplate(res, templateName, dto)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func firstFewLines(body string) string {
+	if len(body) < 501 {
+		return body
+	}
+	return body[0:500] + "..."
 }
