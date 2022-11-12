@@ -1,9 +1,8 @@
 package page
 
-// TODO.refactor
-
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"strings"
 	"wiki/pkg/config"
@@ -14,40 +13,36 @@ func (this *Page) Save() error {
 	if err != nil {
 		return err
 	}
-	fullPath := buildPathToPage(this.title)
 	fileContent := []byte(this.body)
-	return os.WriteFile(fullPath, fileContent, 0600)
+	return os.WriteFile(fullPathTo(this.title), fileContent, 0600)
 }
 
 func Load(title string) (*Page, error) {
-	fullPath := buildPathToPage(title)
-	body, err := os.ReadFile(fullPath)
+	body, err := os.ReadFile(fullPathTo(title))
 	if err != nil {
-		return &Page{title: title}, err
+		return &Page{title: title, body: "PAGE NOT FOUND"}, err
 	}
 	return &Page{title: title, body: string(body)}, nil
 }
 
 func LoadAll() []*Page {
-	res := []*Page{}
-	for _, filename := range allWikiFileNames() {
-		page, _ := Load(filename)
-		res = append(res, page)
+	pages := []*Page{}
+	files, err := readFilesFrom(config.WikiPagesPath)
+	if err != nil {
+		fmt.Printf("Error reading assets: %s", err)
+		return pages
 	}
-	return res
+	for _, title := range trimmedFileNamesOf(files) {
+		page, loadErr := Load(title)
+		if loadErr != nil {
+			fmt.Printf("Page %s not found!", title)
+		}
+		pages = append(pages, page)
+	}
+	return pages
 }
 
-func allWikiFileNames() []string {
-	fileReader, err := os.Open(config.WikiPagesPath)
-	if err != nil {
-		fmt.Println(err)
-		return []string{}
-	}
-	files, err := fileReader.Readdir(0)
-	if err != nil {
-		fmt.Println(err)
-		return []string{}
-	}
+func trimmedFileNamesOf(files []fs.FileInfo) []string {
 	filenames := []string{}
 	for _, file := range files {
 		nameWithoutExtension := strings.Split(file.Name(), ".")[0]
@@ -56,7 +51,19 @@ func allWikiFileNames() []string {
 	return filenames
 }
 
-func buildPathToPage(title string) string {
+func readFilesFrom(dir string) ([]fs.FileInfo, error) {
+	fileReader, pathErr := os.Open(dir)
+	if pathErr != nil {
+		return []fs.FileInfo{}, pathErr
+	}
+	files, readErr := fileReader.Readdir(0)
+	if readErr != nil {
+		return []fs.FileInfo{}, pathErr
+	}
+	return files, nil
+}
+
+func fullPathTo(title string) string {
 	cwd, _ := os.Getwd()
 	return fmt.Sprintf("%s/%s/%s.txt", cwd, config.WikiPagesPath, title)
 }

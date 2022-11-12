@@ -13,8 +13,15 @@ func Index(res http.ResponseWriter, req *http.Request, _ string) {
 		"ViewPath": config.ViewRoute,
 		"EditPath": config.EditRoute,
 	}
-	peter := templateDTO.Multi{Pages: page.LoadAll(), Paths: paths}
-	render(res, "index.html", peter)
+	pages := page.LoadAll()
+	if len(pages) < 1 {
+		notFoundMessage := "Oops!\nDidn't find anything :("
+		http.Error(res, notFoundMessage, http.StatusNotFound)
+		return
+	} else {
+		dto := templateDTO.Multi{Pages: pages, Paths: paths}
+		render(res, "index.html", dto)
+	}
 }
 
 func View(res http.ResponseWriter, req *http.Request, title string) {
