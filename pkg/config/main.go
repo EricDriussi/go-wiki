@@ -1,6 +1,6 @@
 package config
 
-// TODO.Refactor
+// TODO.ask
 
 import (
 	"fmt"
